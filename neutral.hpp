@@ -11,12 +11,12 @@ namespace fwdpp_cython {
   
   using test = KTfwd::singlepop_serialized<KTfwd::popgenmut,KTfwd::mutation_writer,KTfwd::mutation_reader<KTfwd::popgenmut>>;
   
-  singlepop_t evolve(const unsigned & N,
-		     const double & theta,
-		     const double & rho,
-		     const unsigned & seed);
+  void evolve(singlepop_t * pop,
+	      const double & theta,
+	      const double & rho,
+	      const unsigned & seed);
 
-  std::vector<int> sfs(const unsigned & seed,const singlepop_t & pop,const unsigned & nsam);
+  std::vector<int> sfs(const unsigned & seed,const singlepop_t * pop,const unsigned & nsam);
 }
 
 #endif

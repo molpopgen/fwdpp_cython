@@ -15,7 +15,9 @@ cdef extern from "neutral.hpp" namespace "fwdpp_cython":
         test_t(unsigned,unsigned)
 
 ##Why will no one see my fxn:
-#cdef vector[int] sfs(const unsigned & seed,const singlepop_t & pop,const unsigned & nsam)
+cdef extern from "neutral.hpp" namespace "fwdpp_cython":
+    vector[int] sfs(const unsigned & seed,const singlepop_t * pop,const unsigned & nsam)
+    void evolve(singlepop_t * pop, const double & theta, const double & rho, const unsigned & seed)
     
 cdef class PySinglepop:
     cdef singlepop_t *thisptr
@@ -31,9 +33,13 @@ cdef class PyTest:
     def __dealloc__(self):
         del self.thisptr
 
-##OK, this works
-def testfunc():
-    cdef vector[int] foo
-    for i in range(10):
-        foo.push_back(i)
-    return foo
+
+##OK--this works!
+
+def pysfs(int seed, PySinglepop pop, int nsam):
+    return sfs(seed,pop.thisptr,nsam)
+
+def pyevolve(int N,double theta, double rho, int seed):
+    pop = PySinglepop(N)
+    evolve(pop.thisptr,theta,rho,seed)
+    return pop
