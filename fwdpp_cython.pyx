@@ -22,7 +22,8 @@ cdef extern from "neutral.hpp" namespace "fwdpp_cython":
   vector[int] sfs_from_sample(GSLrng_t * rng,const singlepop_t * pop,const unsigned & nsam)
 
 cdef extern from "sample.hpp" namespace "fwdpp_cython":
-  vector[pair[double,string]] take_sample_from_pop(GSLrng_t * rng,const singlepop_t * pop,const unsigned & nsam) 
+    vector[pair[double,string]] take_sample_from_pop(GSLrng_t * rng,const singlepop_t * pop,const unsigned & nsam)
+    double tajd( const vector[pair[double,string]] & __data )
   
 ##Creat the python classes
 cdef class Singlepop:
@@ -52,3 +53,6 @@ def evolve(GSLrng rng,int N,int ngens,double theta, double rho):
 
 def ms_sample(GSLrng rng, Singlepop pop, int nsam):
     return take_sample_from_pop(rng.thisptr,pop.thisptr,nsam)
+
+def TajimasD( vector[pair[double,string]] data ):
+    return tajd(data)
