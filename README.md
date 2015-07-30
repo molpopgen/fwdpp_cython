@@ -1,5 +1,5 @@
 # Intro
-An attempt to get a [fwdpp](http://github.com/molpopgen/fwdpp)-based simulation running in python via [Cython](htpp:://cython.org).
+An attempt to get a [fwdpp](http://github.com/molpopgen/fwdpp)-based simulation running in python via [Cython](http://cython.org).
 
 [fwdpp](http://github.com/molpopgen/fwdpp) comes with examples using [boost python](https://wiki.python.org/moin/boost.python/HowTo).
 
@@ -7,7 +7,7 @@ An attempt to get a [fwdpp](http://github.com/molpopgen/fwdpp)-based simulation 
 
 * Install 
 * Install [fwdpp](http://github.com/molpopgen/fwdpp)
-* Install [Cython](htpp:://cython.org)
+* Install [Cython](http://cython.org)
 
 Then:
 
