@@ -2,6 +2,8 @@
 # distutils: sources = neutral.cpp
 
 from libcpp.vector cimport vector
+from libcpp.pair cimport pair
+from libcpp.string cimport string
 
 ##Create hooks to C++ types
 
@@ -9,6 +11,8 @@ from libcpp.vector cimport vector
 cdef extern from "neutral.hpp" namespace "fwdpp_cython":
     cdef cppclass singlepop_t:
         singlepop_t(unsigned,unsigned)
+
+cdef extern from "rng.hpp" namespace "fwdpp_cython":
     cdef cppclass GSLrng_t:
         GSLrng_t(unsigned)
 
@@ -17,6 +21,9 @@ cdef extern from "neutral.hpp" namespace "fwdpp_cython":
   void evolve_pop(GSLrng_t * rng, singlepop_t * pop, const unsigned & ngens, const double & theta, const double & rho)
   vector[int] sfs_from_sample(GSLrng_t * rng,const singlepop_t * pop,const unsigned & nsam)
 
+cdef extern from "sample.hpp" namespace "fwdpp_cython":
+  vector[pair[double,string]] take_sample_from_pop(GSLrng_t * rng,const singlepop_t * pop,const unsigned & nsam) 
+  
 ##Creat the python classes
 cdef class Singlepop:
     cdef singlepop_t *thisptr
@@ -42,3 +49,6 @@ def evolve(GSLrng rng,int N,int ngens,double theta, double rho):
     pop = Singlepop(N)
     evolve_pop(rng.thisptr,pop.thisptr,ngens,theta,rho)
     return pop
+
+def ms_sample(GSLrng rng, Singlepop pop, int nsam):
+    return take_sample_from_pop(rng.thisptr,pop.thisptr,nsam)

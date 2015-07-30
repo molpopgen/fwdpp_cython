@@ -3,10 +3,10 @@
 
 #include <fwdpp/diploid.hh>
 #include <fwdpp/sugar.hpp> //lazy include of sugar library
+#include <rng.hpp>
 
 namespace fwdpp_cython {
 
-  using GSLrng_t = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;
   using singlepop_t = KTfwd::singlepop_serialized<KTfwd::popgenmut,KTfwd::mutation_writer,KTfwd::mutation_reader<KTfwd::popgenmut>>;
   
   using test = KTfwd::singlepop_serialized<KTfwd::popgenmut,KTfwd::mutation_writer,KTfwd::mutation_reader<KTfwd::popgenmut>>;
