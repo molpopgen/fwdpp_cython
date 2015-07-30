@@ -5,41 +5,40 @@ from libcpp.vector cimport vector
 
 ##Create hooks to C++ types
 
-#This is the "singlepop" type from fwdpp/sugar/singlepop.hpp
+#Wrap the classes:
 cdef extern from "neutral.hpp" namespace "fwdpp_cython":
     cdef cppclass singlepop_t:
         singlepop_t(unsigned,unsigned)
+    cdef cppclass GSLrng_t:
+        GSLrng_t(unsigned)
 
+##Now, wrap the functions
 cdef extern from "neutral.hpp" namespace "fwdpp_cython":
-    cdef cppclass test_t:
-        test_t(unsigned,unsigned)
+  void evolve_pop(GSLrng_t * rng, singlepop_t * pop, const unsigned & ngens, const double & theta, const double & rho)
+  vector[int] sfs_from_sample(GSLrng_t * rng,const singlepop_t * pop,const unsigned & nsam)
 
-##Why will no one see my fxn:
-cdef extern from "neutral.hpp" namespace "fwdpp_cython":
-    vector[int] sfs(const unsigned & seed,const singlepop_t * pop,const unsigned & nsam)
-    void evolve(singlepop_t * pop, const double & theta, const double & rho, const unsigned & seed)
-    
-cdef class PySinglepop:
+##Creat the python classes
+cdef class Singlepop:
     cdef singlepop_t *thisptr
     def __cinit__(self,int N, int reserve_size = 100):
         self.thisptr = new singlepop_t(N,reserve_size)
     def __dealloc__(self):
         del self.thisptr
 
-cdef class PyTest:
-    cdef test_t *thisptr
-    def __cinit__(self,int N, int reserve_size = 100):
-        self.thisptr = new test_t(N,reserve_size)
+cdef class GSLrng:
+    cdef GSLrng_t * thisptr
+    def __cinit__(self, int seed):
+        self.thisptr = new GSLrng_t(seed)
     def __dealloc__(self):
         del self.thisptr
 
 
 ##OK--this works!
 
-def pysfs(int seed, PySinglepop pop, int nsam):
-    return sfs(seed,pop.thisptr,nsam)
+def sfs_sample(GSLrng rng, Singlepop pop, int nsam):
+    return sfs_from_sample(rng.thisptr,pop.thisptr,nsam)
 
-def pyevolve(int N,double theta, double rho, int seed):
-    pop = PySinglepop(N)
-    evolve(pop.thisptr,theta,rho,seed)
+def evolve(GSLrng rng,int N,int ngens,double theta, double rho):
+    pop = Singlepop(N)
+    evolve_pop(rng.thisptr,pop.thisptr,ngens,theta,rho)
     return pop

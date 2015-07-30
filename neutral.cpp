@@ -6,28 +6,27 @@ using namespace KTfwd;
 
 namespace fwdpp_cython {
 
-  void evolve(singlepop_t * pop,
-	      const double & theta,
-	      const double & rho,
-	      const unsigned & seed)
+  void evolve_pop(GSLrng_t * rng,
+		  singlepop_t * pop,
+		  const unsigned & ngens,
+		  const double & theta,
+		  const double & rho)
   {
     double mu = theta/(4.*double(pop->N)),littler=rho/(4.*double(pop->N));
-    GSLrng_t<GSL_RNG_MT19937> r(seed);
 
-    std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get());
+    std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng->get());
 
-    unsigned ngens = 10*pop->N;
     for( unsigned generation = 0; generation < ngens; ++generation )
       {
 	//Iterate the population through 1 generation
-	double wbar = sample_diploid(r.get(),
+	double wbar = sample_diploid(rng->get(),
 					    &pop->gametes,  //non-const pointer to gametes
 					    &pop->diploids, //non-const pointer to diploids
 					    &pop->mutations, //non-const pointer to mutations
 					    pop->N,     //current pop size, remains constant
 					    mu,    //mutation rate per gamete
-					    std::bind(infsites(),r.get(),&pop->mut_lookup,generation,
-						      mu,0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}),
+					    std::bind(infsites(),rng->get(),&pop->mut_lookup,generation,
+						      mu,0.,[&rng](){return gsl_rng_uniform(rng->get());},[](){return 0.;},[](){return 0.;}),
 					    //The recombination policy includes the uniform crossover rate
 					    std::bind(genetics101(),std::placeholders::_1,std::placeholders::_2,
 						      std::placeholders::_3,
@@ -35,7 +34,7 @@ namespace fwdpp_cython {
 						      std::ref(pop->neutral),std::ref(pop->selected),
 						      &pop->gametes,
 						      littler,
-						      r.get(),
+						      rng->get(),
 						      recmap),
 					    std::bind(insert_at_end<singlepop_t::mutation_t,singlepop_t::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 					    std::bind(insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
@@ -46,16 +45,14 @@ namespace fwdpp_cython {
       }
   }
 
-  std::vector<int> sfs(const unsigned & seed,const singlepop_t * pop,const unsigned & nsam)
+  std::vector<int> sfs_from_sample(GSLrng_t * rng,const singlepop_t * pop,const unsigned & nsam)
   {
-    GSLrng_t<GSL_RNG_MT19937> rng(seed);
-
     map<double,unsigned> mutfreqs;
     unsigned twoN = 2*pop->N;
     for( unsigned i = 0 ; i < nsam ; ++i )
       {
 	//pick a random chrom (w/replacement...)
-	unsigned chrom = unsigned(gsl_ran_flat(rng.get(),0.,double(twoN)));
+	unsigned chrom = unsigned(gsl_ran_flat(rng->get(),0.,double(twoN)));
 	//get pointer to that chrom from the individual
 	auto gamete = (chrom%2==0.) ? pop->diploids[chrom/2].first : pop->diploids[chrom/2].second;
 	//In this example, there are only neutral mutations, so that's what we'll iterate over
