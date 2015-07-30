@@ -30,3 +30,10 @@ cdef class PyTest:
         self.thisptr = new test_t(N,reserve_size)
     def __dealloc__(self):
         del self.thisptr
+
+##OK, this works
+def testfunc():
+    cdef vector[int] foo
+    for i in range(10):
+        foo.push_back(i)
+    return foo
