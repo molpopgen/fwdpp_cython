@@ -9,5 +9,6 @@ setup(ext_modules = cythonize(Extension(
                                                   # additional C++ source files
            language="c++",                        # generate and compile C++ code
            extra_compile_args=["-std=c++11","-I."],
-           extra_link_args=["-std=c++11","-lgsl","-lgslcblas","-ltcmalloc"]
+           extra_link_args=["-std=c++11"],
+           libraries=["gsl","gslcblas","tcmalloc"]
       )))
